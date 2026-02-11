@@ -10,10 +10,10 @@ from telegram.ext import (
 
 # === 🔑 ЗАМЕНИ ЭТИ ДВЕ СТРОКИ ===
 BOT_TOKEN = "7978471971:AAGgAFKwEoBCPtxStPCK1aF06Iz7vuoUWQo"  # ← вставь токен от @BotFather (в кавычках!)
-YOUR_TELEGRAM_ID = 1606381134  # ← вставь свой ID (цифры, без кавычек)
+YOUR_TELEGRAM_ID = 1606381134  # ← вставь свой Telegram ID (цифры, без кавычек)
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(name)
 
 user_sessions = {}
 
@@ -46,8 +46,7 @@ async def send_application(user_id, data, context: ContextTypes.DEFAULT_TYPE):
     try:
         await context.bot.send_message(chat_id=YOUR_TELEGRAM_ID, text=message)
     except Exception as e:
-        logger.error(f"Ошибка: {e}")
-
+        logger.error(f"Ошибка отправки: {e}")
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     text = update.message.text.strip() if update.message.text else ""
@@ -94,11 +93,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         kb = [["глянцевая", "матовая"]]
         await update.message.reply_text("Бумага?", reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True))
         session["step"] = "photo_paper"
-
-    elif step == "photo_paper":
+elif step == "photo_paper":
         if text.lower() not in ["глянцевая", "матовая"]:
-            await update.message.reply_text("Выберите: глянцевая или матовая.")
-            return
+            await update.message.reply_text("Выберите: глянцевая или матовая.")            return
         data["бумага"] = text.lower()
         await update.message.reply_text("Пришлите фотографии.")
         session["step"] = "photo_files"
@@ -131,11 +128,11 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif update.message.document:
         session["data"]["файлы"].append("document")
 
+# === ЗАПУСК ===
 app = Application.builder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(MessageHandler(filters.PHOTO | filters.Document.ALL, handle_file))
 
-if __name__ == "__main__":
+if name == "main":
     app.run_polling()
-
