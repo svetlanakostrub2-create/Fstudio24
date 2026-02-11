@@ -1,12 +1,11 @@
 import logging
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
     CommandHandler,
     MessageHandler,
     filters,
     ContextTypes,
-    ReplyKeyboardMarkup,
 )
 
 # === 🔑 ЗАМЕНИ ЭТИ ДВЕ СТРОКИ ===
@@ -139,3 +138,4 @@ app.add_handler(MessageHandler(filters.PHOTO | filters.Document.ALL, handle_file
 
 if __name__ == "__main__":
     app.run_polling()
+
