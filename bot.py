@@ -9,12 +9,12 @@ from telegram.ext import (
     ReplyKeyboardMarkup,
 )
 
-# === ⚠️ ЗАМЕНИ ЭТИ ДВЕ СТРОКИ ===
-BOT_TOKEN = "7978471971:AAGgAFKwEoBCPtxStPCK1aF06Iz7vuoUWQo"  # ← вставь токен в кавычках
-YOUR_TELEGRAM_ID = 1606381134  # ← вставь свой ID (цифры)
+# === 🔑 ЗАМЕНИ ЭТИ ДВЕ СТРОКИ ===
+BOT_TOKEN = "7978471971:AAGgAFKwEoBCPtxStPCK1aF06Iz7vuoUWQo"  # ← вставь токен от @BotFather (в кавычках!)
+YOUR_TELEGRAM_ID = 1606381134  # ← вставь свой ID (цифры, без кавычек)
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)
 
 user_sessions = {}
 
@@ -48,6 +48,7 @@ async def send_application(user_id, data, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=YOUR_TELEGRAM_ID, text=message)
     except Exception as e:
         logger.error(f"Ошибка: {e}")
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     text = update.message.text.strip() if update.message.text else ""
@@ -94,8 +95,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         kb = [["глянцевая", "матовая"]]
         await update.message.reply_text("Бумага?", reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True))
         session["step"] = "photo_paper"
-elif step == "photo_paper":
-        if text.lower() not in ["глянцевая", "матовая"]:            await update.message.reply_text("Выберите: глянцевая или матовая.")
+
+    elif step == "photo_paper":
+        if text.lower() not in ["глянцевая", "матовая"]:
+            await update.message.reply_text("Выберите: глянцевая или матовая.")
             return
         data["бумага"] = text.lower()
         await update.message.reply_text("Пришлите фотографии.")
@@ -134,5 +137,5 @@ app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(MessageHandler(filters.PHOTO | filters.Document.ALL, handle_file))
 
-if name == "main":
+if __name__ == "__main__":
     app.run_polling()
